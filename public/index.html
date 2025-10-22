@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IM+C mirror</title>
+    <link rel="shortcut icon" href="" type="image/vnd.microsoft.icon" id="icon">
+    <link rel="stylesheet" href="" type="text/css" id="css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="./css/colorbox.css">
+    <!-- update the version number as needed -->
+    <!-- script defer src="/__/firebase/5.5.1/firebase-app.js"></script -->
+    <!-- include only the Firebase features as you need -->
+    <!-- script defer src="/__/firebase/5.5.1/firebase-auth.js"></script -->
+    <!-- script defer src="/__/firebase/5.5.1/firebase-database.js"></script -->
+    <!-- script defer src="/__/firebase/5.5.1/firebase-messaging.js"></script -->
+    <!-- script defer src="/__/firebase/5.5.1/firebase-storage.js"></script -->
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+  </head>
+  <body id="fullscreen" class="touka-item">
+    <!-- h1></h1 -->
+    <article id="main">
+      <div id="background">
+        <canvas id="image" style="width:100%;height:100%;">残念ながらHTML5に対応していません</canvas>
+        <video loop id="video" style="background-color: rgba(0, 0, 0, 0);" autoplay playsinline="true" />
+      </div>
+      <div id="object">
+        <canvas id="line" style="width:100%;height:100%;">残念ながらHTML5に対応していません</canvas>
+      </div>
+      <div id="draw">
+        <canvas id="canvas" style="width:100%;height:100%;">残念ながらHTML5に対応していません</canvas>
+      </div>
+      <div id="menu">
+        <div id="submenu_pen" hidden>
+          <ul id="pen_style">
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_black"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_red"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_green"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_blue"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_yellow"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_magenta"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_cyan"></li>
+              <li><img src="./images/Empty.png" class="pen_color" id="pen_white"></li>
+              <li><img src="./images/Empty.png" class="pen_width" id="pen_width_1"></li>
+              <li><img src="./images/Empty.png" class="pen_width" id="pen_width_2"></li>
+              <!-- li><img src="./images/Empty.png" class="pen_width" id="pen_width_3"></li -->
+          </ul>
+        </div>
+        <div id="submenu_marker" hidden>
+          <ul id="marker_style">
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_black"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_red"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_green"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_blue"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_yellow"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_magenta"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_cyan"></li>
+              <li><img src="./images/Empty.png" class="marker_color" id="marker_white"></li>
+              <!-- li><img src="./images/Empty.png" class="marker_width" id="marker_width_1"></li -->
+              <!-- li><img src="./images/Empty.png" class="marker_width" id="marker_width_2"></li -->
+              <!-- li><img src="./images/Empty.png" class="marker_width" id="marker_width_3"></li -->
+              <!-- li><img src="./images/Empty.png" class="marker_opacity" id="marker_opacity_8"></li -->
+              <!-- li><img src="./images/Empty.png" class="marker_opacity" id="marker_opacity_5"></li -->
+          </ul>
+        </div>
+        <div id="submenu_eraser" hidden>
+          <ul id="eraser_style">
+              <li>
+                <img src="./images/Empty.png" class="clearAll" style="cursol:pointer" width="60" height="60" />
+                <input type="button" style="display:none" />
+              </li>
+          </ul>
+        </div>
+        <img src="./images/Empty.png" id="menubackground" hidden />
+        <div id="menumove" hidden>
+          <ul id="menulist">
+            <li id="menuhide" style="width:30px; margin-left: -40px; margin-right: 10px;">
+              <img src="./images/Empty.png" class="menudown" style="cursol:pointer; width: 30px;" width="30" height="90" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="pencil" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="marker" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="clearObject" style="cursol:pointer" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="selectitem" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="captureall" style="cursol:pointer" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width: 70px;">
+              <img src="./images/Empty.png" class="recording" style="cursol:pointer" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li id="rotation" style="width: 70px;">
+              <img src="./images/Empty.png" class="rotation" style="cursol:pointer" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li id="freeze" style="width: 70px;">
+              <img src="./images/Empty.png" class="freeze" style="cursol:pointer" width="60" height="60" />
+              <input type="button" style="display:none" />
+            </li>
+            <li style="width:390px; background-color:transparent;" id="zoom">
+              <input id="zoomrange" type="range" min="1" max="8" step="0.2" value="1" onchange="changeZoom()" class="zoomrange" style="width: 370px; height: 60px; background-color: transparent; margin-left:10px; margin-right:10px;" />
+            </li>
+            <li id="mode" class="dropup" style="width: 320px;">
+              <form name="modeList" style="margin-left: 10px; margin-right: 10px;">
+                <select class="modelist" id="modeList" name="selectedMode" style="width: 300px; height: 70px;"></select>
+              </form>
+            </li>
+            <li style="width:60px; height: 60px;">
+              <img src="./images/Empty.png" class="speaker" style="cursol:pointer; width: 40px; height: 40px; margin: 10px 10px;" width="40" height="40" />
+              <input type="button" style="display:none">
+            </li>
+            <li style="width:60px; height: 60px;">
+              <img src="./images/Empty.png" class="fullscreen" style="cursol:pointer; width: 40px; height: 40px; margin: 10px 10px;" width="40" height="40" />
+              <input type="button" style="display:none">
+            </li>
+            <li style="width:60px; height: 60px;">
+              <a id="help" class='iframe' href="./Manual/Manual.html">
+                <img src="./images/Empty.png" class="help" style="cursol:pointer; width: 40px; height: 40px; margin: 10px 10px;" width="40" height="40" />
+                <!-- input type="button" style="display:none" -->
+              </a>
+            </li>
+            <li id="logo" style="width:108px; height: 60px;">
+              <!-- a href="http://www.elmo.co.jp/" target="_blank"><img src="./images/Empty.png" class="logo" width="200" height="40" style="width:200px; height:40px; margin-top:10px; margin-bottom:10px; margin-left:40px; margin-right:40px;"/></a -->
+              <a href="./Calibration.html" target="_blank">
+                <img src="./images/Empty.png" class="logo" width="108" height="22" style="width:108px; height:22px; margin-top:19px; margin-bottom:19px; margin-left:0px; margin-right:0px;"/>
+              </a>
+            </li>
+            <li id="menupos" style="width:30px; float: right; margin-right: 0px;">
+              <img src="./images/Empty.png" class="positionchange" style="cursol:pointer; width: 30px;" width="30" height="90" />
+              <input type="button" style="display:none" />
+            </li>
+          </ul>
+          <p id="footer" style="height: 10px; text-align: center; color: white;">Copyright © TECHNO HORIZON Co., Ltd. All Rights Reserved.</p>
+        </div>
+        <!-- footer></footer -->
+        <div class="moveup" style="position: absolute; float: left; left: 0px; bottom: 0px;" hidden>
+          <img src="./images/Empty.png" class="menuup" width="90" height="45" />
+          <input type="button" style="display:none" />
+        </div>
+        <div class="moveup" style="position: absolute; float: right; right: 0px; bottom: 0px;" hidden>
+          <img src="./images/Empty.png" class="menuup" width="90" height="45" />
+          <input type="button" style="display:none" />
+        </div>
+        <div style="position: absolute; float: right; right: 5px; top: 5px;">
+           <img src="./images/Empty.png" id="timer" class="timer" width="60" height="60" hidden />
+           <!-- img src="./images/Empty.png" id="login" class="login" width="170" height="60" hidden / -->
+        </div>
+        <div class="status" style="position: absolute; float: left; left: 0px; top: 0px;"></div>
+        <div id="frontmost" style="position:absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); width: 100%; height: 50%; background-color: rgba(0, 0, 0, 0.0);" hidden>
+          <div class="timersetting" style="width: 240px; height: 330px; position: absolute; float: right; right: 0px; top: -50%; margin-top: 70px; background-color: rgba(0, 0, 0, 0.8);" hidden>
+            <img src="./images/Empty.png" id="timersetting_startstop" width="230" height="60" style="position: absolute; float: right; right: 5px; top: 5px;" />
+            <img src="./images/Empty.png" id="timersetting_reset" width="230" height="60" style="position: absolute; float: right; right: 5px; top: 70px;" />
+            <img src="./images/Empty.png" id="timersetting_1min" width="230" height="60" style="position: absolute; float: right; right:  5px; top: 135px;" />
+            <img src="./images/Empty.png" id="timersetting_3min" width="230" height="60" style="position: absolute; float: right; right:  5px; top: 200px;" />
+            <img src="./images/Empty.png" id="timersetting_5min" width="230" height="60" style="position: absolute; float: right; right:  5px; top: 265px;" />
+          </div>
+          <div id="text" style="position:absolute; display: inline-block; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); width: 70%; height: auto; color: white; text-align: center; vertical-align: middle; vfont-family: Arial, sans-serif; font-weight: bold; background-color: rgba(0, 0, 0, 0.8);" />
+        </div>
+      </div>
+    </article>
+    <audio id="timersound" preload="auto">
+      <source src="" type="audio/mp3">
+    </audio>
+    <div id="auth" style="position: absolute; float: left; width: 100%; height: 100%;" hidden>
+      <h1 id="authtext" style="position: absolute; float: left; width: 100%; height: auto; left: 0px; top: 5%; color: black; text-align: center;">You need permission to access your account.</h1>
+      <img src="./images/Empty.png" class="auth" style="position: absolute; float: left; width: 96%; height: auto; left: 2%; top: 20%;" />
+      <input type="button" id="authbutton" class="auth" value="Next" style="position: absolute; float: left; width: 30%; height: auto; left: 35%; top: 80%; border: none; font-size: 30px;" />
+    </div>
+    <script src="./js/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase.js"></script>
+    <script src="./js/jquery.colorbox.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".iframe").colorbox({ iframe: true, width: "86%", height: "96%" });
+        });
+    </script>
+    <!-- script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="./js/bootstrap-select.min.js"></script>
+    <script src="./js/jquery.fullscreen.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <!-- script src="./js/Fabric.js"></script -->
+    <!-- script src="./js/Whammy.js"></script -->
+    <script src="./js/Index.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/client.js"></script>
+	<script type="module">
+	  // Import the functions you need from the SDKs you need
+	  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+	  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+	  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-check.js";
+	  // TODO: Add SDKs for Firebase products that you want to use
+	  // https://firebase.google.com/docs/web/setup#available-libraries
+
+	  // Your web app's Firebase configuration
+	  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+	  const firebaseConfig = {
+	    apiKey: "AIzaSyA0LzBqZjm9Gn_QUsywoOpIniahsW104w8",
+	    authDomain: "image-mate.firebaseapp.com",
+	    projectId: "image-mate",
+	    storageBucket: "image-mate.firebasestorage.app",
+	    messagingSenderId: "295697588189",
+	    appId: "1:295697588189:web:223814d3203a9604fce034",
+	    measurementId: "G-HTKQ1GWJL9"
+	  };
+
+	  // Initialize Firebase
+	  const app = initializeApp(firebaseConfig);
+	  const analytics = getAnalytics(app);
+	  const appCheck = initializeAppCheck(app, {
+	    provider: new ReCaptchaV3Provider('6LcqBMQrAAAAAMwqR3qI4tw27K4d_TOkRYfNmRNY'),
+	    isTokenAutoRefreshEnabled: true
+	  });
+	</script>
+  </body>
+</html>

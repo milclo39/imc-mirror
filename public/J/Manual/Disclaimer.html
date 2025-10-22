@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+      <head>
+        <meta charset="utf-8">
+        <title>Disclaimer</title>
+        <style>
+        </style>
+    </head>
+    <body>
+        <div id="disclaimer">
+            <div id="description">
+                <div id="description_title" style="font-size: 30px; font-weight: bold;"></div>
+                <div id="description_text" style="text-align:left; padding-left: 5%;"></div>
+            </div>
+            <div style="text-align:left; padding-left: 5%;" >
+                <span><font color=red>*</span>
+                <span>
+                    <font color=black id="attention">
+                    By not checking <b>Do not show this again</b>, we will assume you agree to disclaimer
+                </span>
+            </div>
+        </div>
+        <br>
+        <div id="checkvisibleJP"><label><input class="checkvisible" type="checkbox" name="nextDisplay" onclick="setlocalStorage(this.checked.toString())">今後表示しない</label></div>
+        <div id="checkvisibleEN"><label><input class="checkvisible" type="checkbox" name="nextDisplay" onclick="setlocalStorage(this.checked.toString())">Do not show this again</label></div>
+        <div id="trademark" style="text-align: left; font-size: 16px;"></div>
+        <script src="../../../js/jquery.min.js"></script>
+        <script src="../js/Disclaimer.js"></script>
+        <script>
+            var storage = localStorage;
+            var language = (window.navigator.languages && window.navigator.languages[0]) ||
+                        window.navigator.language ||
+                        window.navigator.userLanguage ||
+                        window.navigator.browserLanguage;
+            if (language.includes("ja")) {
+                document.getElementById('checkvisibleEN').style.display = "none";
+            } else {
+                document.getElementById('checkvisibleJP').style.display = "none";
+            }
+            document.getElementById('description_title').innerHTML = DISCLAIMER_TITLE;
+            document.getElementById('description_text').innerHTML = DISCLAIMER_TEXT + "<br>";
+            document.getElementById('attention').innerHTML = DISCLAIMER_ATTENTION;
+            document.getElementById('trademark').innerHTML = TRADEMARK_TEXT;
+
+            function setlocalStorage(value) {
+                var key = "IMC_nextDisplay";
+                var val = value;
+                if (key && val)  storage.setItem(key, val);
+                key = "";
+                val = "";
+            }
+        </script>
+    </body>
+</html>

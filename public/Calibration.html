@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        body {
+            style ="cursor:crosshair";
+        }
+    </style>
+</head>
+<body>
+    <button type="button" id="btn" onclick="btnclick()" style="font-size:20px;">Enter calibration screen</button>
+</body>
+<script>
+    var FullScreen = false;
+    var btn = document.getElementById("btn");
+    function btnclick() {
+        if (FullScreen) {
+            exitFullscreen();
+        }
+        else {
+            requestFullScreen();
+        }
+    }
+    function requestFullScreen() {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullScreen) {
+            document.documentElement.webkitRequestFullScreen();
+        }
+    }
+    function exitFullscreen() {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        }
+		window.close();
+    }
+
+    ! function () {
+
+        function e(n) {
+            return document.getElementsByTagName(n)
+        }
+
+        function o() {
+            a = m.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, c = m.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            r.fillStyle = '#F0F0FF';
+            r.fillRect(0, 0, a, c);
+            var x = screen.width, y = screen.height;
+//            if ((x == m.width) && (y == m.height)) {
+            if ((Math.abs(x - m.width) < 2) && (Math.abs(y - m.height) < 2)) {	// 誤差を許容する
+                FullScreen = true;
+                btn.innerHTML = " Exit calibration screen";
+
+                var i = 0;
+
+                r.beginPath();
+                var Allx = new Array(x * 0.125, x * 0.875, x * 0.875, x * 0.125);
+                var Ally = new Array(y * 0.125, y * 0.125, y * 0.875, y * 0.875);
+                for (i = 0; i < 4; i++) {
+                    r.moveTo(Allx[i] - 12, Ally[i]);
+                    r.lineTo(Allx[i] + 12, Ally[i]);
+                    r.moveTo(Allx[i], Ally[i] - 12);
+                    r.lineTo(Allx[i], Ally[i] + 12);
+                }
+                r.strokeStyle = '#FF0000';
+                r.lineWidth = 2;
+                r.stroke();
+                r.closePath();
+                r.restore();
+
+                r.beginPath();
+                for (i = 0; i < 4; i++) {
+                    r.fillStyle = "#000";
+                    r.font = "bold 20px Calibri";
+                    r.textAlign = "center";
+                    r.textBaseline = 'middle';
+                    r.fillText((i + 1).toString(10), Allx[i] + 10, Ally[i] + 15);
+                }
+                r.closePath();
+                r.restore();
+            }
+            else {
+                FullScreen = false;
+                btn.innerHTML = "Enter calibration screen";
+            }
+            btn.style.cssText = "font-size:30px;position:absolute;top:" + (m.height / 4).toString() + "px;left:" + ((m.width - btn.offsetWidth) / 2).toString() + "px;";
+        }
+        var a, c, m = document.createElement("canvas"),
+            r = m.getContext("2d");
+        m.style.cssText = "position:fixed;top:0;left:0;z-index:-1", e("body")[0].appendChild(m), o(), window.onresize = o;
+        btn.style.cssText = "font-size:30px;position:absolute;top:" + (m.height / 4).toString() + "px;left:" + ((m.width - btn.offsetWidth) / 2).toString() + "px;";
+    }();
+</script>
+</html>
