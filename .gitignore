@@ -2,3 +2,4 @@
 !.firebaserc
 *~
 deploy/
+*/node_modules
