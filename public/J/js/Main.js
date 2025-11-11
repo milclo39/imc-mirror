@@ -2026,6 +2026,8 @@ function getCameraName(label) {
         label = "L-12G/TT-12G";
     } else if (label.includes("(09a1:0032)") || label.includes("EX-1")) {
         label = "EX-1";
+    } else if (label.includes("(09a1:0033)") || label.includes("L-12S/TT-12S")) {
+        label = "L-12S/TT-12S";
     } else if (label.includes("(09a1:") || label.includes("ELMO ")) {
         label = "ELMO camera";
     } else if (USE_LOCAL == false) {
@@ -2058,7 +2060,7 @@ function getCameraName(label) {
 }
 function isDocCam(label) {
     if (label == "MO-1/MO-1w" || label == "TX-1/LX-1" || label.includes("MX-P") || label == "PX-30/PX-10" || label == "L-12F"
-		|| label == "OX-1" || label == "L-12G/TT-12G" || label == "EX-1" || label == "ELMO camera") {
+		|| label == "OX-1" || label == "L-12G/TT-12G" || label == "EX-1" || label == "L-12S/TT-12S" || label == "ELMO camera") {
         return true;
     }
     return false;
