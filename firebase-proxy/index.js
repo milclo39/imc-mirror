@@ -17,8 +17,8 @@ const HEADERS_TO_SKIP = [
   'proxy-authenticate',
   'proxy-authorization',
   'te',
-  'trailers',
-  'content-length' // streamで転送する場合は元のcontent-lengthは使わない
+  'trailers'
+  // content-length, content-encodingは転送する
 ];
 
 // 生のボディストリームを取得するため、expressのパーサーを使わない
@@ -48,18 +48,20 @@ app.use('*', async (req, res) => {
       proxyHeaders['x-forwarded-host'] = req.hostname;
     }
 
+    // クライアントのAccept-Encodingをそのまま転送
     const response = await axios({
       method: req.method,
       url: url,
       headers: proxyHeaders,
-      data: req, // reqオブジェクト自体をストリームとして転送
+      data: req,
       responseType: 'stream',
-      timeout: 30000, // 30秒のタイムアウト
-      maxRedirects: 0, // リダイレクトはクライアントに任せる
-      validateStatus: () => true // すべてのステータスコードを許可
+      timeout: 30000,
+      maxRedirects: 0,
+      validateStatus: () => true,
+      decompress: false // 自動展開を無効化
     });
 
-    // 転送すべきでないレスポンスヘッダーを除外
+    // すべてのレスポンスヘッダーをそのまま転送（content-encodingも含む）
     Object.keys(response.headers).forEach(key => {
       if (!HEADERS_TO_SKIP.includes(key.toLowerCase())) {
         res.set(key, response.headers[key]);
@@ -103,6 +105,10 @@ app.use('*', async (req, res) => {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, '0.0.0.0', (err) => {
+  if (err) {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  }
   console.log(`Proxy server listening on port ${port}`);
 });
