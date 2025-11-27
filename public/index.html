@@ -203,7 +203,6 @@
 	  // Import the functions you need from the SDKs you need
 	  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 	  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
-	  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app-check.js";
 	  // TODO: Add SDKs for Firebase products that you want to use
 	  // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -222,10 +221,6 @@
 	  // Initialize Firebase
 	  const app = initializeApp(firebaseConfig);
 	  const analytics = getAnalytics(app);
-	  const appCheck = initializeAppCheck(app, {
-	    provider: new ReCaptchaV3Provider('6LcqBMQrAAAAAMwqR3qI4tw27K4d_TOkRYfNmRNY'),
-	    isTokenAutoRefreshEnabled: true
-	  });
 	</script>
   </body>
 </html>
