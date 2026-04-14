@@ -526,6 +526,7 @@ function remove_cookie(){
   console.log("remove cookie.");
 }
 $(function(){
+	return;	// count disabled
     cookieArr = $.cookie();
     var total = 0;
     var now = new Date();

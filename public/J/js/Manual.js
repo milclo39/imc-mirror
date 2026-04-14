@@ -1,4 +1,4 @@
-﻿var VERSION = "1.8 Mirror";
+﻿var VERSION = "1.9 Mirror";
 var language = (window.navigator.languages && window.navigator.languages[0]) ||
             window.navigator.language ||
             window.navigator.userLanguage ||
@@ -31,7 +31,8 @@ if (language.includes("ja")) {
         + "<br>" + "リストから Google ドライブ?? を選択することでアップロードしたファイルを背景に設定できます。";
 */
     var DESCRIPTION_ATTENTION = "リストにアイコンが表示されない場合、画面を更新してください";
-    var DESCRIPTION_ATTENTION2 = "対応するコンテンツは静止画(png/jpg/jpeg/bmp)と動画(webm/mp4)です。";
+    var DESCRIPTION_ATTENTION2 = "対応するコンテンツは静止画(png/jpg/bmp)と動画(webm/mp4)です。";
+    var DESCRIPTION_ATTENTION3 = "ホワイトボードは４つ保持しますが、保存は個別に行ってください。";
     var DESCRIPTION_FEATURE_SUBTITLE = "簡単セットアップ!";
     var DESCRIPTION_FEATURE_USECASE_WHITEBOARD = "<b>" + "■ 利用方法(ホワイトボード)" + "</b>";
     var DESCRIPTION_FEATURE_USECASE_CONTENTS = "<b>" + "■ 利用方法(コンテンツ)" + "</b>";
@@ -150,6 +151,7 @@ if (language.includes("ja")) {
     document.getElementById('checkvisibleJP').style.display = "block";
 
     var LIST_DOCUMENT_INVALID_IMG = "images/list_document_invalid.png";
+    var LIST_DOCUMENT_VALID_IMG = "images/list_document_valid.png";
     var LIST_DOCUMENT_VALID_CAMERA_IMG = "images/list_document_valid_camera.png";
 /*
     var LIST_DOCUMENT_VALID_DRIVE_IMG = "images/list_document_valid_drive.png";
@@ -188,7 +190,8 @@ if (language.includes("ja")) {
         + "<br>" + "By selecting Google Drive ? from the list you can set the uploaded file as the background.";
 */
     var DESCRIPTION_ATTENTION = "If you don't find camera icon, please refresh your browser";
-    var DESCRIPTION_ATTENTION2 = "Supported contents are still images(png/jpg/jpeg/bmp) and movies(webm/mp4).";
+    var DESCRIPTION_ATTENTION2 = "Supported contents are images(png/jpg/bmp) and movies(webm/mp4).";
+    var DESCRIPTION_ATTENTION3 = "We have four whiteboards, but please save them individually.";
     var DESCRIPTION_FEATURE_SUBTITLE = "Easy to Setup!";
     var DESCRIPTION_FEATURE_USECASE_WHITEBOARD = "<b>" + "■ How to use(White Board)" + "</b>";
     var DESCRIPTION_FEATURE_USECASE_CONTENTS = "<b>" + "■ How to use(Contents)" + "</b>";
@@ -307,6 +310,7 @@ if (language.includes("ja")) {
     document.getElementById('checkvisibleEN').style.display = "block";
 
     var LIST_DOCUMENT_INVALID_IMG = "images/list_document_invalid_E.png";
+    var LIST_DOCUMENT_VALID_IMG = "images/list_document_valid_E.png";
     var LIST_DOCUMENT_VALID_CAMERA_IMG = "images/list_document_valid_camera_E.png";
 /*
     var LIST_DOCUMENT_VALID_DRIVE_IMG = "images/list_document_valid_drive_E.png";
@@ -341,6 +345,7 @@ var feature_WindowsImg_camera = document.getElementById('WindowsImg_Camera');
 var feature_WindowsImg_drive = document.getElementById('WindowsImg_Drive');
 */
 var feature_ListImg_invalid = document.getElementsByClassName('listPicture_invalid');
+var feature_ListImg_valid = document.getElementById('listPicture_valid');
 var feature_ListImg_valid_camera = document.getElementById('listPicture_valid_camera');
 /*
 var feature_ListImg_valid_drive = document.getElementById('listPicture_valid_drive');
@@ -393,6 +398,7 @@ var descriptionFeatur = document.getElementById('descriptionFeature');
 var descriptionFeatur2 = document.getElementById('descriptionFeature2');
 var descriptionFeatureAttention = document.getElementById('descriptionFeatureAttention');
 var descriptionFeatureAttention2 = document.getElementById('descriptionFeatureAttention2');
+var descriptionFeatureAttention3 = document.getElementById('descriptionFeatureAttention3');
 var descriptionAttention = document.getElementsByClassName('descriptionAttention')[0];
 
 $('.checkvisible').attr('checked', storage.getItem("IMC_nextDisplay") == "true" ? true : false);
@@ -428,6 +434,7 @@ for (button of FeatureButtonDrive) {
 descriptionFeatur.innerHTML="&nbsp&nbsp" + DESCRIPTION_FEATURE;
 descriptionFeatureAttention.innerHTML = DESCRIPTION_ATTENTION; 
 descriptionFeatureAttention2.innerHTML = DESCRIPTION_ATTENTION2;
+descriptionFeatureAttention3.innerHTML = DESCRIPTION_ATTENTION3;
 document.getElementById('functionAttentionText').innerHTML = FUNCTION_ATTENTION_TEXT;
 feature_WindowsImg_whiteboard.src = FEATURE_WHITEBOARD_IMG ;
 feature_WindowsImg_contents.src = FEATURE_CONTENTS_IMG;
@@ -435,6 +442,7 @@ feature_WindowsImg_camera.src = FEATURE_CAMERA_IMG ;
 /*
 feature_WindowsImg_drive.src = FEATURE_DRIVE_IMG;
 */
+feature_ListImg_valid.src = LIST_DOCUMENT_VALID_IMG;
 feature_ListImg_valid_camera.src = LIST_DOCUMENT_VALID_CAMERA_IMG;
 /*
 feature_ListImg_valid_drive.src = LIST_DOCUMENT_VALID_DRIVE_IMG;

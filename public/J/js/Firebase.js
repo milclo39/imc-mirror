@@ -1,10 +1,10 @@
 ﻿var config = {
-    apiKey: "AIzaSyA0LzBqZjm9Gn_QUsywoOpIniahsW104w8",
-    authDomain: "image-mate.firebaseapp.com",
-    databaseURL: "https://image-mate-default-rtdb.firebaseio.com",
-    projectId: "image-mate",
-    storageBucket: "image-mate.appspot.com",
-    messagingSenderId: "295697588189"
+    apiKey: "null",
+    authDomain: "",
+    databaseURL: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: ""
 };
 firebase.initializeApp(config);
 firebase.auth().onAuthStateChanged(user => {

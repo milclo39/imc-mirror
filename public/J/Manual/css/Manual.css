@@ -403,7 +403,7 @@ background-color: white;
     mertical-align:middle;
 }
 
-.listPicture_invalid, #listPicture_valid_camera, #listPicture_valid_drive{
+.listPicture_invalid, #listPicture_valid, #listPicture_valid_camera, #listPicture_valid_drive{
     border:solid 4px gray;
     height:100%;
 }
