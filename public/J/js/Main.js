@@ -74,7 +74,135 @@ selectInsertImage.accept = '.png, .jpg, .jpeg, .bmp';
 $("#background").css('background-color', 'transparent');
 document.getElementById('video').style.display = "none";
 document.getElementById('image').style.display = "none";
-$('#modeList').selectpicker();
+/*
+ * The former bootstrap-select 1.12.4 control depended on Bootstrap 3's
+ * jQuery dropdown API. Keep the native select as the application's source
+ * of truth and render its image-capable menu here instead.
+ */
+(function ($) {
+    function ModePicker(select) {
+        this.select = select;
+        this.$select = $(select);
+        this.id = select.id + '-picker';
+        this.create();
+        this.refresh();
+        this.$select.on('change.modePicker', this.refresh.bind(this));
+    }
+
+    ModePicker.prototype.create = function () {
+        var self = this;
+        this.$select.addClass('mode-picker-source');
+        this.$root = $('<div>', { class: 'mode-picker', id: this.id });
+        this.$toggle = $('<button>', {
+            type: 'button',
+            class: 'mode-picker-toggle',
+            'aria-haspopup': 'listbox',
+            'aria-expanded': 'false',
+            'aria-controls': this.id + '-menu'
+        });
+        this.$value = $('<span>', { class: 'mode-picker-value' });
+        this.$toggle.append(this.$value, $('<span>', { class: 'mode-picker-caret', 'aria-hidden': 'true' }));
+        this.$menu = $('<ul>', { class: 'mode-picker-menu', id: this.id + '-menu', role: 'listbox' });
+        this.$root.append(this.$toggle, this.$menu);
+        this.$select.after(this.$root);
+
+        this.$toggle.on('click', function () {
+            self.toggle();
+        }).on('keydown', function (event) {
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                self.open();
+                self.focusOption(event.key === 'ArrowDown' ? 1 : -1);
+            } else if (event.key === 'Escape') {
+                self.close();
+            }
+        });
+
+        $(document).on('mousedown.' + this.id, function (event) {
+            if (!self.$root[0].contains(event.target)) self.close();
+        });
+    };
+
+    ModePicker.prototype.optionContent = function (option) {
+        var content = document.createElement('span');
+        content.className = 'mode-picker-option-content';
+        if (option.dataset.content) {
+            var template = document.createElement('template');
+            template.innerHTML = option.dataset.content;
+            content.append(template.content.cloneNode(true));
+        } else {
+            content.textContent = option.textContent;
+        }
+        return content;
+    };
+
+    ModePicker.prototype.refresh = function () {
+        var self = this;
+        var selected = this.select.options[this.select.selectedIndex];
+        this.$value.empty();
+        if (selected) this.$value.append(this.optionContent(selected));
+
+        this.$menu.empty();
+        Array.prototype.forEach.call(this.select.options, function (option, index) {
+            var $item = $('<li>');
+            var $button = $('<button>', {
+                type: 'button',
+                class: 'mode-picker-option',
+                role: 'option',
+                'aria-selected': option.selected ? 'true' : 'false',
+                disabled: option.disabled
+            }).append(self.optionContent(option));
+            $button.on('click', function () {
+                if (self.select.selectedIndex !== index) {
+                    self.select.selectedIndex = index;
+                    self.select.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                self.close();
+                self.$toggle.trigger('focus');
+            });
+            $item.append($button);
+            self.$menu.append($item);
+        });
+    };
+
+    ModePicker.prototype.open = function () {
+        if (this.$root.hasClass('is-open') || this.select.disabled) return;
+        this.$root.addClass('is-open');
+        this.$toggle.attr('aria-expanded', 'true');
+        this.$select.trigger('show.modePicker');
+    };
+
+    ModePicker.prototype.close = function () {
+        if (!this.$root.hasClass('is-open')) return;
+        this.$root.removeClass('is-open');
+        this.$toggle.attr('aria-expanded', 'false');
+    };
+
+    ModePicker.prototype.toggle = function () {
+        this.$root.hasClass('is-open') ? this.close() : this.open();
+    };
+
+    ModePicker.prototype.focusOption = function (direction) {
+        var buttons = this.$menu.find('.mode-picker-option:not(:disabled)');
+        if (!buttons.length) return;
+        var current = buttons.index(document.activeElement);
+        var index = current < 0 ? this.select.selectedIndex : (current + direction + buttons.length) % buttons.length;
+        buttons.eq(Math.max(0, index)).trigger('focus');
+    };
+
+    $.fn.modePicker = function (method) {
+        return this.each(function () {
+            var picker = $.data(this, 'modePicker');
+            if (!picker) {
+                picker = new ModePicker(this);
+                $.data(this, 'modePicker', picker);
+            }
+            if (method === 'refresh') picker.refresh();
+        });
+    };
+}(jQuery));
+
+$('#modeList').modePicker();
 $('.selectitem').fadeOut("fast");
 $('.recording').fadeOut("fast");
 $(".rotation").fadeOut("fast");
@@ -338,7 +466,7 @@ $('#modeList').append('<option id="contentsmode" value="Contents" data-content="
 /*
 $('#modeList').append('<option id="url" value="url" data-content="<img src=\'./' + useLanguage + '/images/URL.png\' style=\'width:40px; height:40px;\'>&nbsp;<span style=\'display:inline-block;\'>' + TEXT_MODE_URL + '</span>"></option>');
 */
-$('#modeList').selectpicker("refresh");
+$('#modeList').modePicker("refresh");
 if (!language.includes("ja") && !language.includes("en")) showCookieConsentMessage();
 function showCookieConsentMessage() {
     if (!confirm(TEXT_COOKIE_CONSENT)){
@@ -482,7 +610,7 @@ function canvas_resize_finished() {
     cvs.setAttribute('width',windowInnerWidth);
     cvs.setAttribute('height',windowInnerHeight);
 
-    $("#text").css('font-size', windowInnerHeight < windowInnerWidth ? $("#frontmost").height() * 0.5 + "px" : $("#frontmost").width() * 0.2 + "px");
+    resizeTimerText();
 
     if (background_type.includes("whiteboard")) {
         if (background_type == "whiteboard1") {
@@ -501,13 +629,21 @@ function canvas_resize_finished() {
     }
     if (is_show_setting_tmp == true || is_init == true) {
         if (is_init == true && localStorage.getItem("IMC_nextDisplay") != "true") $('.iframe')[0].click();
-        $(".moveup").slideUp("fast", function() {
+        $(".moveup").removeAttr('hidden').slideUp("fast", function() {
             is_show_setting_tmp = false; is_init = false; showSetting();
         });
     }
 }
 window.addEventListener('resize', canvas_resize, false);
 canvas_resize();
+
+function resizeTimerText() {
+    var $frontmost = $("#frontmost");
+    var height = $frontmost.height();
+    var width = $frontmost.width();
+    if (height === 0 || width === 0) return;
+    $("#text").css('font-size', height < width ? height * 0.5 + "px" : width * 0.2 + "px");
+}
 
 /* ------------------------------------------------------------------------------------------------ */
 var COOKIE_KEY_VISIT = "visit_date_pass";
@@ -597,16 +733,18 @@ function showSetting() {
     if (is_show_setting == true) return;
     if (is_busy == true) return;
     is_busy = true;
-    $("#menubackground").stop(true, true).slideDown(100, function() {
-        $("#menumove").stop(true, true).fadeIn(100, function() {
+    // Bootstrap 5 applies display:none!important to [hidden], so remove it
+    // before using jQuery's animation methods.
+    $("#menubackground").removeAttr('hidden').stop(true, true).slideDown(100, function() {
+        $("#menumove").removeAttr('hidden').stop(true, true).fadeIn(100, function() {
             is_show_setting = true;
             is_busy = false;
         });
     });
     if (item_type != ITEM_TYPE.SELECT || background_type != "material") {
-        $(".timer").stop(true, true).fadeIn(100, function() {
+        $(".timer").removeAttr('hidden').stop(true, true).fadeIn(100, function() {
             if (is_show_timer == true) {
-                $(".timersetting").stop(true, true).fadeIn(100, function() {});
+                $(".timersetting").removeAttr('hidden').stop(true, true).fadeIn(100, function() {});
             }
         });
     }
@@ -630,7 +768,7 @@ function hideSetting() {
                     $(".timersetting").stop(true, true).fadeOut("fast", function() {});
                     $(".timer").stop(true, true).fadeOut("fast", function() {});
                     $("#menubackground").stop(true, true).slideUp("fast", function() {
-                        $(".moveup").slideDown("fast", function() {
+                        $(".moveup").removeAttr('hidden').slideDown("fast", function() {
                             is_show_setting = false;
                         });
                     });
@@ -644,14 +782,14 @@ function hideSetting() {
 }
 function showSettingPen() {
     if (scale_zoom != 1.0) return;
-    $("#submenu_pen").stop(true, true).slideDown("fast", function() { is_show_setting_pen = true; });
+    $("#submenu_pen").removeAttr('hidden').stop(true, true).slideDown("fast", function() { is_show_setting_pen = true; });
 }
 function hideSettingPen() {
     $("#submenu_pen").stop(true, true).slideUp("fast", function() { is_show_setting_pen = false; });
 }
 function showSettingMarker() {
     if (scale_zoom != 1.0) return;
-    $("#submenu_marker").stop(true, true).slideDown("fast", function() { is_show_setting_marker = true; });
+    $("#submenu_marker").removeAttr('hidden').stop(true, true).slideDown("fast", function() { is_show_setting_marker = true; });
 }
 function hideSettingMarker() {
     $("#submenu_marker").stop(true, true).slideUp("fast", function() { is_show_setting_marker = false; });
@@ -720,7 +858,7 @@ $(".pen_color").click(
 );
 function showSettingMarker() {
     if (scale_zoom != 1.0) return;
-    $("#submenu_marker").stop(true, true).slideDown("fast", function() { is_show_setting_marker = true; });
+    $("#submenu_marker").removeAttr('hidden').stop(true, true).slideDown("fast", function() { is_show_setting_marker = true; });
 }
 function hideSettingMarker() {
     $("#submenu_marker").stop(true, true).slideUp("fast", function() { is_show_setting_marker = false; });
@@ -797,7 +935,7 @@ $(".marker_color").click(
 );
 function showSettingEraser() {
     if (scale_zoom != 1.0) return;
-    $("#submenu_eraser").stop(true, true).slideDown("fast", function() { is_show_setting_eraser = true; });
+    $("#submenu_eraser").removeAttr('hidden').stop(true, true).slideDown("fast", function() { is_show_setting_eraser = true; });
 }
 function hideSettingEraser() {
     $("#submenu_eraser").stop(true, true).slideUp("fast", function() { is_show_setting_eraser = false; });
@@ -1111,7 +1249,7 @@ function handleAuthResult(authResult) {
         }
     } else if (is_manual_auth == false) {
         AuthUI.doAuth();
-        $("#auth").fadeIn(100, function() { $("#main").fadeOut("fast"); });
+        $("#auth").removeAttr('hidden').fadeIn(100, function() { $("#main").fadeOut("fast"); });
     }
     is_manual_auth = false;
     $('#login').attr('src', pickerApiLoaded && oauthToken ? './' + useLanguage + '/images/Logout.png' : './' + useLanguage + '/images/Login.png');
@@ -1145,7 +1283,7 @@ function pickerCallback(data) {
         var doc = data[google.picker.Response.DOCUMENTS][0];
         var url = doc[google.picker.Document.URL];
         $('select[name=selectedMode]').val(MODE.DRIVE);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
         changeModeMaterial(url);
         $('.selectitem').fadeOut("fast");
         $('.recording').fadeOut("fast");
@@ -1153,7 +1291,7 @@ function pickerCallback(data) {
         $(".freeze").fadeOut("fast");
     } else {
         $('select[name=selectedMode]').val(MODE.WHITEBOARD1);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
         changeMode();
     }
 }
@@ -1283,7 +1421,7 @@ function changeMode() {
         $(".freeze").fadeOut("fast");
     } else if (mode == MODE.CONTENTS) {
         $('select[name=selectedMode]').val(mode_current);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
         $('#contentsmode').trigger('click');
     } else if (mode == MODE.IMAGE) {
         changeModeImage("");
@@ -1301,7 +1439,7 @@ function changeMode() {
         if ((path == null || path == "") || (USE_LOCAL == false && !path.includes("http"))) {
             if (urlBackgroundTmp == null) {
                 $('select[name=selectedMode]').val(MODE.WHITEBOARD1);
-                $('#modeList').selectpicker("refresh");
+                $('#modeList').modePicker("refresh");
                 changeMode();
                 return;
             } else {
@@ -1333,7 +1471,7 @@ function changeMode() {
 }
 $('#mode').on('change', function() {
     changeMode();
-}).on('show.bs.dropdown', function () {
+}).on('show.modePicker', function () {
     hideSettingPen();
     hideSettingMarker();
     hideSettingEraser();
@@ -1555,7 +1693,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 }
                 $('#modeList').append('<option id="image" value="image" data-content="<img src=\'' + reader.result + '\' style=\'width:40px; height:30px; margin-top:5px; margin-bottom:5px;\'>&nbsp;<span style=\'display:inline-block;\'>' + TEXT_CONTENTS_IMAGE + '</span>"></option>');
                 $('select[name=selectedMode]').val(MODE.IMAGE);
-                $('#modeList').selectpicker("refresh");
+                $('#modeList').modePicker("refresh");
                 mode_current = "image";
                 changeBackgroundAfter("image", true);
             } else if (file_type.toLowerCase().indexOf("video/mp4") >= 0 || file_type.toLowerCase().indexOf("video/webm") >= 0) {
@@ -1577,7 +1715,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 }
                 $('#modeList').append('<option id="video" value="video" data-content="<img src=\'./' + useLanguage + '/images/Movie.png\' style=\'width:40px; height:40px;\'>&nbsp;<span style=\'display:inline-block;\'>' + TEXT_CONTENTS_VIDEO + '</span>"></option>');
                 $('select[name=selectedMode]').val(MODE.VIDEO);
-                $('#modeList').selectpicker("refresh");
+                $('#modeList').modePicker("refresh");
                 mode_current = "video";
                 changeBackgroundAfter("video", true);
             }
@@ -1723,7 +1861,7 @@ function changeModeMaterial(filepath) {
         }
         $('#modeList').append('<option id="material" value="material" data-content="<img src=\'./' + useLanguage + '/images/MATERIAL.png\' style=\'width:40px; height:30px; margin-top:5px; margin-bottom:5px;\'>&nbsp;<span style=\'display:inline-block;\'>' + TEXT_MATERIAL + '</span>"></option>');
         $('select[name=selectedMode]').val(MODE.MATERIAL);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
         mode_current = MODE.MATERIAL;
         changeBackgroundAfter("material", false);
     } else {
@@ -1759,7 +1897,7 @@ function gotDevices(deviceInfos) {
         $('#modeList').append('<option id="drive" value="drive" data-content="<img src=\'./' + useLanguage + '/images/drive_48dp.png\' style=\'width:40px; height:40px;\'>&nbsp;<span style=\'display:inline-block;\'>' + TEXT_MODE_DRIVE + '</span>"></option>');
         if (mode_current == MODE.DRIVE) $('select[name=selectedMode]').val(MODE.DRIVE);
     }
-    $('#modeList').selectpicker("refresh");
+    $('#modeList').modePicker("refresh");
 /*
     deviceid = null;
 */
@@ -1805,7 +1943,7 @@ function gotDevices(deviceInfos) {
             if (option.text != label || label.includes(TEXT_MODE_CAMERA)) {
                 option.text = label;
                 $('#modeList').append('<option id="' + option.text + '" value="' + option.value + '" data-content="<img src=\'./' + useLanguage + '/images/CAMERA.png\' style=\'width:40px; height:40px;\'>&nbsp;<span style=\'display:inline-block;\'>' + option.text + '</span>"></option>');
-                $('#modeList').selectpicker("refresh");
+                $('#modeList').modePicker("refresh");
                 camcount++;
                 if (is_label_empty == false) {
                     is_label_empty = label.includes(TEXT_MODE_CAMERA) || (USE_LOCAL == true && list_valid_device.length == 0) ? true : false;
@@ -1825,13 +1963,13 @@ function gotDevices(deviceInfos) {
     }
     if (!mode_current.includes("Whiteboard") && mode_current != MODE.TRANSPARENT && mode_current != MODE.IMAGE && mode_current != MODE.VIDEO && mode_current != MODE.URL && mode_current != MODE.DRIVE && mode_current != MODE.MATERIAL) {
         $('select[name=selectedMode]').val(mode_current);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
     }
     if (is_label_empty == true) {
         startVideo(0, 0, false);
     } else if (is_change_cameramode == true && is_init_checked == false) {
         $('select[name=selectedMode]').val(deviceid);
-        $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
 	    obj = document.modeList.selectedMode;
 	    var index = obj.selectedIndex;
         var label = obj.options[index].id;
@@ -1903,9 +2041,9 @@ function startVideo(w, h, retry) {
                 if (w == 0 && h == 0 && retry == false) {
                     var id = modeList.options[i].id;
                     var label = getCameraName(videoTracks[0].label);
-                    $('#modeList').selectpicker("refresh");
+                    $('#modeList').modePicker("refresh");
                     $('#modeList').splice(i, 1, '<option id="' + id + '" value="' + deviceid + '" data-content="<img src=\'./' + useLanguage + '/images/CAMERA.png\' style=\'width:40px; height:40px;\'>&nbsp;<span style=\'display:inline-block;\'>' + label + '</span>"></option>');
-                    $('#modeList').selectpicker("refresh");
+                    $('#modeList').modePicker("refresh");
                     if (list_valid_device.indexOf(modeList.options[i].value + "::" + videoTracks[0].label) < 0) {
                         list_valid_device.push(modeList.options[i].value + "::" + videoTracks[0].label);
                         map_device[videoTracks[0].label.slice(-10, -1)] = modeList.options[i].value;    // VID:PIDを取り出し
@@ -1966,7 +2104,7 @@ function startVideo(w, h, retry) {
                 if (modeList.options[i].value == deviceid) {
                     modeList.remove(i);
                     $('select[name=selectedMode]').val(MODE.WHITEBOARD1);
-                    $('#modeList').selectpicker("refresh");
+        $('#modeList').modePicker("refresh");
                     changeMode();
                     if (retry == true) alert(TEXT_CANNOT_USE_CAMERA);
                     list_reject_device.push(deviceid);
@@ -2510,12 +2648,16 @@ function settimer() {
             is_timer_init = false;
         }
         document.getElementById("text").style.backgroundColor  = 'rgba(0, 0, 0, 0.8)';
-        $(".timersetting").stop(true, true).fadeIn(100, function() { });
-        $("#frontmost").stop(true, true).fadeIn(100, function() { });
+        // Do not rely on jQuery's fadeIn here: Bootstrap 5 gives [hidden]
+        // display:none!important. The dedicated class has a stronger rule.
+        $("#frontmost").removeAttr('hidden').addClass('timer-overlay-visible')
+            .stop(true, true).css('opacity', 1).show();
+        resizeTimerText();
+        $(".timersetting").removeAttr('hidden').stop(true, true).css('opacity', 1).show();
     } else {
         is_show_timer = false;
-        $(".timersetting").stop(true, true).fadeOut("fast", function() {});
-        $("#frontmost").stop(true, true).fadeOut("fast", function() {});
+        $(".timersetting").stop(true, true).hide();
+        $("#frontmost").removeClass('timer-overlay-visible').stop(true, true).hide();
         document.getElementById("text").innerHTML = "";
         stoptimer();
         timercount = saved_timercount;
