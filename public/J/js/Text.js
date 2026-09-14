@@ -30,6 +30,7 @@ var TEXT_TOOLTIP_HELP = "Help";
 var TEXT_TOOLTIP_MENUPOS = "Change the layout of the menu";
 var TEXT_TOOLTIP_LOGIN = "Login";
 var TEXT_TOOLTIP_TIMER = "Timer";
+var TEXT_TOOLTIP_CALIB = "Calibration";
 var TEXT_CONFIRM_RELOAD = "It disappears when written contents are reloaded, is not it a problem?";
 if (language.includes("ja")) {
     TEXT_BROWSEER_UNSUPPORTED = "はサポートされていないブラウザです。アプリケーションを終了します。";
@@ -64,6 +65,7 @@ if (language.includes("ja")) {
     TEXT_TOOLTIP_MENUPOS = "メニュー配置変更";
     TEXT_TOOLTIP_LOGIN = "ログイン";
     TEXT_TOOLTIP_TIMER = "タイマー";
+    TEXT_TOOLTIP_CALIB = "キャリブレーション";
 /*
     TEXT_CONFIRM_RELOAD = "書かれた内容が再読込により消えますがよろしいですか？";
     document.getElementById('authtext').innerHTML = "あなたのアカウントにアクセスするための許可が必要です。";

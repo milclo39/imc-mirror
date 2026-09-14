@@ -560,6 +560,7 @@ $(".freeze").attr('title',TEXT_TOOLTIP_FREEZE);
 $(".zoomrange").attr('title',TEXT_TOOLTIP_ZOOM);
 $(".speaker").attr('title',TEXT_TOOLTIP_SPEAKER);
 $(".fullscreen").attr('title',TEXT_TOOLTIP_FULLSCREEN);
+$(".logo").attr('title',TEXT_TOOLTIP_CALIB);
 $(".help").attr('title',TEXT_TOOLTIP_HELP);
 $(".positionchange").attr('title',TEXT_TOOLTIP_MENUPOS);
 $(".timer").attr('title',TEXT_TOOLTIP_TIMER);

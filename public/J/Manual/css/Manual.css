@@ -267,17 +267,17 @@ background-color: white;
     display:none;
     justify-content: center;
 
-    width:75%;
+    width:90%;
     margin:auto;
 }
 
 
 #function > #function_description_others > div{
     flex: 1 1 0;
-    margin-left:10px;
-    margin-right:10px;
-    height:13vmin;
-    max-width:13vmin;
+    margin-left:6px;
+    margin-right:6px;
+    height:10vmin;
+    max-width:10vmin;
     max-border-radius:13px;
 
     box-sizing:border-box;

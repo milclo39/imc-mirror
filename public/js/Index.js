@@ -56,7 +56,7 @@ $(".speaker").attr('src', './' + useLanguage + '/images/Speaker_off.png');
 $(".fullscreen").attr('src', './' + useLanguage + '/images/FullScreen.png');
 $("#help").attr('href', './' + useLanguage + '/Manual/Manual.html');
 $(".help").attr('src', './' + useLanguage + '/images/Help_maru.png');
-$(".logo").attr('src', './' + useLanguage + '/images/ELMO_LOGO.png');
+$(".logo").attr('src', './' + useLanguage + '/images/CalibrationPlus.png');
 $(".positionchange").attr('src', './' + useLanguage + '/images/Move_R_S.png');
 $(".menuup").attr('src', './' + useLanguage + '/images/MENU_UP.png');
 $("#timer").attr('src', './' + useLanguage + '/images/Timer.png');
