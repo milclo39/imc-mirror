@@ -388,10 +388,19 @@ function finish(e) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     points.length = 0;
 }
-$("#canvas").on("mousedown", function(e) { start(e); });
+$("#canvas").on("mousedown", function(e) {
+    if (e.which == 3) updateDrawingCursor(ITEM_TYPE.ERASER);
+    start(e);
+});
 $("#canvas").on("mousemove", function(e) { move(e); });
-$("#canvas").on("mouseup", function(e) { finish(e); });
-$("#canvas").on("mouseleave", function(e) { finish(e); });
+$("#canvas").on("mouseup", function(e) {
+    finish(e);
+    updateDrawingCursor(item_type);
+});
+$("#canvas").on("mouseleave", function(e) {
+    finish(e);
+    updateDrawingCursor(item_type);
+});
 addEventListener("touchstart", function(e) {
     if (e.target.id == "canvas") {
         e.preventDefault();
@@ -2900,6 +2909,21 @@ function adjustPosZoom () {
 }
 
 /* ------------------------------------------------------------------------------------------------ */
+function updateDrawingCursor(type) {
+    var cursor = 'auto';
+
+    if (type == ITEM_TYPE.LINE_FREE_PEN) {
+        cursor = 'url(./' + useLanguage + '/images/cursor_pencil.png) 0 30, auto';
+    } else if (type == ITEM_TYPE.LINE_FREE_MARKER) {
+        cursor = 'url(./' + useLanguage + '/images/cursor_marker.png) 0 30, auto';
+    } else if (type == ITEM_TYPE.ERASER) {
+        cursor = 'url(./' + useLanguage + '/images/cursor_eraser.png) 0 30, auto';
+    }
+
+    cvs.style.cursor = cursor;
+}
+updateDrawingCursor(item_type);
+
 function selectItemType(type) {
     if (type.includes(ITEM_TYPE.LINE_FREE_PEN)) {
         changePenIcon("S");
@@ -2935,6 +2959,7 @@ function selectItemType(type) {
         }
     }
     item_type = type;
+    updateDrawingCursor(type);
 }
 function changePenIcon(state) {
     if (color_pen.slice(0,-4) == "rgba(0,0,0,") {
